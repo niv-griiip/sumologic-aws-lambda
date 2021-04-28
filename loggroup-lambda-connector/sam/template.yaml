@@ -51,7 +51,7 @@ Parameters:
 
   MessageFilterPattern:
     Type: String
-    Description: "Filter log messages based on the given pattern, visit - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html"
+    Description: "Filter log messages by pattern or leave blank for no filter. For more information, visit - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html"
     Default: ""
 
   UseExistingLogs:
