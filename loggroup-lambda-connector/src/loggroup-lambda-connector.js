@@ -3,19 +3,19 @@ const util = require("util");
 var cwl = new AWS.CloudWatchLogs({apiVersion: '2014-03-28'});
 var maxRetryCounter = 3;
 
-async function createSubscriptionFilter(lambdaLogGroupName, destinationArn, roleArn) {
+async function createSubscriptionFilter(lambdaLogGroupName, destinationArn, roleArn, filterPattern) {
     if (destinationArn.startsWith("arn:aws:lambda")){
         var params = {
             destinationArn: destinationArn,
             filterName: 'SumoLGLBDFilter',
-            filterPattern: '',
+            filterPattern,
             logGroupName: lambdaLogGroupName
         };
     } else {
         var params = {
             destinationArn: destinationArn,
             filterName: 'SumoLGLBDFilter',
-            filterPattern: '',
+            filterPattern,
             logGroupName: lambdaLogGroupName,
             roleArn: roleArn
         };
@@ -66,7 +66,7 @@ async function subscribeExistingLogGroups(logGroups, retryCounter) {
             console.log("Unmatched logGroup: ", logGroupName);
             return Promise.resolve();
         } else {
-            return createSubscriptionFilter(logGroupName, destinationArn, roleArn).catch( function (err) {
+            return createSubscriptionFilter(logGroupName, destinationArn, roleArn, filterPattern).catch( function (err) {
                 if (err && err.code == "ThrottlingException") {
                     failedLogGroupNames.push({logGroupName: logGroupName});
                 }
@@ -131,7 +131,7 @@ function processEvents(env, event, errorHandler) {
     var logGroupName = event.detail.requestParameters.logGroupName;
     if (filterLogGroups(event, env.LOG_GROUP_PATTERN)) {
         console.log("Subscribing: ", logGroupName, env.DESTINATION_ARN);
-        createSubscriptionFilter(logGroupName, env.DESTINATION_ARN, env.ROLE_ARN).catch (function (err) {
+        createSubscriptionFilter(logGroupName, env.DESTINATION_ARN, env.ROLE_ARN, env.MESSAGE_FILTER_PATTERN).catch (function (err) {
             errorHandler(err, "Error in Subscribing.");
         });
     } else {

@@ -49,6 +49,11 @@ Parameters:
     Default: "Test"
     Description: "Enter regex for matching logGroups"
 
+  MessageFilterPattern:
+    Type: String
+    Description: "Filter log messages by pattern or leave blank for no filter. For more information, visit - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html"
+    Default: ""
+
   UseExistingLogs:
     Type: String
     Default: "false"
@@ -104,6 +109,7 @@ Resources:
         Variables:
           DESTINATION_ARN: !Ref "DestinationArnValue"
           LOG_GROUP_PATTERN: !Ref "LogGroupPattern"
+          MESSAGE_FILTER_PATTERN: !Ref "MessageFilterPattern"
           LOG_GROUP_TAGS: !Join [ ",", { "Ref": "LogGroupTags" } ]
           ROLE_ARN: !Ref "RoleArn"
       Policies:
